@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thank You | School Election</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .thank-you-card {
+            animation: fadeInUp 0.7s ease-in-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+
+    <div class="card shadow-lg p-4 thank-you-card text-center" style="max-width: 500px;">
+        <div class="card-body">
+            <h1 class="mb-3 text-success">🎉 Thank You!</h1>
+            <h4 class="card-title mb-3">
+                Dear 
+                {% if voter_type == 'learner' %}
+                    {{ voter.full_name }} <span class="text-muted">({{ voter.grade }})</span>
+                {% else %}
+                    {{ voter.name }} <span class="text-muted">(STAFF)</span>
+                {% endif %}
+            </h4>
+            <p class="card-text">
+                Your vote has been recorded successfully.<br> 
+                We appreciate your participation.
+            </p>
+            <hr>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary mt-3">Return to Home</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% if voter_type == 'learner' %}
+        <script>
+            const name = "{{ voter.full_name|escapejs }}";
+        </script>
+    {% else %}
+        <script>
+            const name = "{{ voter.name|escapejs }}";
+        </script>
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = `Thank you for voting, ${name}.`;
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(message);
+
+            synth.onvoiceschanged = () => {
+                const voices = synth.getVoices();
+                const preferredVoice = voices.find(voice =>
+                    voice.name.includes("Google") ||
+                    voice.name.includes("Microsoft") ||
+                    voice.lang === "en-US"
+                );
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                utterance.lang = 'en-US';
+                utterance.pitch = 0.9;
+                utterance.rate = 0.9;
+                synth.speak(utterance);
+            };
+        });
+    </script>
+
+</body>
+</html>

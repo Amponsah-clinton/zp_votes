@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | School Voting System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: white;
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px 20px 20px;
+        }
+
+        .login-container {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: white;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .logo-side {
+            flex: 1 1 400px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .logo-side img {
+            max-width: 100%;
+            max-height: 400px;
+            width: auto;
+            height: auto;
+        }
+
+        .form-side {
+            flex: 1 1 500px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #00bcd4, #2196f3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .btn-login {
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00c853, #64dd17);
+            border: none;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #00bfa5, #00e676);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 40px;
+        }
+
+        .password-container i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .logo-side, .form-side {
+                flex: 1 1 100%;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .logo-side img {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-container">
+
+        <div class="logo-side">
+            <img src="{% static 'images/logo.png' %}" alt="ZPEC Logo">
+        </div>
+
+     
+        <div class="form-side" ">
+            <div class="login-header">
+                <h3>ZPEC Student Voting System</h3>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="vote-alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_initials" class="form-label">Enter your initials</label>
+                    <input type="text" name="initials" maxlength="10" class="form-control" placeholder="e.g. CA" id="id_initials">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">Enter your password</label>
+                    <div class="password-container">
+                        <input type="password" name="password" class="form-control" placeholder="e.g. zpec1234" id="id_password">
+                        <i class="fa fa-eye" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-login text-white">Login</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+    <footer class="text-center py-3 mt-5 bg-light border-top">
+    <p style="font-size: 19px;" class="mb-0 small text-muted">
+        &copy; <span id="year"></span> Powered by <strong>ZPEC Hillside Campus IT CLUB</strong>
+    </p>
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Auto-close alert -->
+<script>
+    setTimeout(function () {
+        const alert = document.getElementById('vote-alert');
+        if (alert) {
+            const alertInstance = bootstrap.Alert.getOrCreateInstance(alert);
+            alertInstance.close();
+        }
+    }, 7000);
+</script>
+
+<!-- Toggle password visibility -->
+<script>
+    const toggleIcon = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('id_password');
+
+    toggleIcon.addEventListener('click', () => {
+        const isHidden = passwordInput.type === 'password';
+        passwordInput.type = isHidden ? 'text' : 'password';
+        toggleIcon.classList.toggle('fa-eye');
+        toggleIcon.classList.toggle('fa-eye-slash');
+    });
+</script>
+
+</body>
+</html>

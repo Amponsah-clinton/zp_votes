@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voting Stats | ZPEC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .stat-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .stat-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .aspirant-entry {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+
+        .aspirant-entry img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #dee2e6;
+        }
+
+        .aspirant-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .progress {
+            height: 22px;
+            margin-top: 10px;
+        }
+
+        .btn-nav {
+            margin: 25px 10px 0;
+        }
+
+        .vote-label {
+            font-size: 15px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body class="py-4">
+    <div class="container">
+    <h2 class="text-center mb-2">📊 Voting Results</h2>
+<p style="padding-top: 30px;" class="text-center text-muted mb-4">
+    ⚠️ Voting is still ongoing. Please refresh this page from time to time to view the latest updates.<br>
+    Use the <strong>Next</strong> button to navigate through the various positions.
+</p>
+
+
+        {% for group in data %}
+            <div class="stat-section {% if forloop.first %}active{% endif %}" id="section-{{ forloop.counter }}">
+                <h4 class="text-primary text-center mb-4">Position: {{ group.position }}</h4>
+
+                {% for asp in group.aspirants %}
+                    <div class="aspirant-entry">
+                        <div class="aspirant-details">
+                            {% if asp.photo %}
+                                <img src="{{ asp.photo }}" alt="{{ asp.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/65" alt="No Photo">
+                            {% endif %}
+                            <div class="w-100">
+                                <strong>{{ asp.name }}</strong> <small>({{ asp.grade }})</small><br>
+                                <span class="vote-label">{{ asp.votes }} votes / {{ group.total_votes }} — <span style="color: crimson;">{{ asp.percentage }}%</span></span>
+
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         style="width: {{ asp.percentage }}%;"
+                                         aria-valuenow="{{ asp.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="text-center">
+                    <button class="btn btn-outline-secondary btn-nav" onclick="navigate(-1)">← Previous</button>
+                    <button class="btn btn-outline-primary btn-nav" onclick="navigate(1)">Next →</button>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if not data %}
+            <p class="text-center text-muted">No voting data available.</p>
+        {% endif %}
+    </div>
+
+
+
+    <footer class="text-center py-3 mt-5 bg-light border-top">
+    <p class="mb-0 small text-muted">
+        &copy; <span id="year"></span> Powered by <strong>ZPEC Hillside Campus IT CLUB</strong>
+    </p>
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
+    <script>
+        let current = 0;
+        const sections = document.querySelectorAll('.stat-section');
+
+        function navigate(direction) {
+            sections[current].classList.remove('active');
+            current = (current + direction + sections.length) % sections.length;
+            sections[current].classList.add('active');
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Learners</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .upload-container {
+            max-width: 500px;
+            margin: 40px auto;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container upload-container">
+    <div class="card shadow-sm p-4">
+        <h3 class="mb-3 text-center">📥 Upload Learners CSV</h3>
+
+        {% for message in messages %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Upload CSV File</label>
+                <input type="file" name="csv_file" class="form-control" required>
+                <div class="form-text">Format: full_name, grade</div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+
+        <hr class="my-4">
+
+       
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote | ZPEC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            position: relative;
+            background-color: white;
+            min-height: 100vh;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{% static "images/logo.png" %}');
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: 0.03;
+            z-index: -1;
+        }
+
+        .aspirant img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 15px auto;
+            border: 3px solid #007bff;
+            padding: 3px;
+            background-color: #fff;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .aspirant {
+            text-align: center;
+        }
+
+        .step-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .step-section.active {
+            opacity: 1;
+            transform: translateY(0);
+            height: auto;
+            pointer-events: auto;
+        }
+
+        input[type="radio"] {
+            transform: scale(2.9);
+            margin-top: 10px;
+        }
+
+   .card {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 2px solid transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+    border-radius: 12px;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+    background-color: #fefefe;
+}
+
+.card.selected {
+    border-color: #28a745;
+    background-color: #e8f8ee;
+    box-shadow: 0 0 12px rgba(40, 167, 69, 0.4);
+}
+
+
+        .card {
+            background-color: rgba(255, 219, 219, 0.15);
+        }
+
+        .xx:hover {
+            color: brown;
+        }
+
+        .card.selected {
+            border: 3px solid #28a745;
+            background-color: #f1fdf3;
+        }
+
+        .progressbar li {
+            display: inline-block;
+            padding: 10px 15px;
+            border-bottom: 4px solid #ccc;
+            color: #888;
+            font-size: 11px;
+        }
+
+        .progressbar li.active {
+            border-bottom: 4px solid #007bff;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        @media only screen and (max-width: 575.98px) {
+            .progressbar {
+                display: none;
+            }
+        }
+
+        .gf:hover {
+            color: black !important;
+        }
+    </style>
+</head>
+
+<body class="bg-light py-3">
+<div class="container-fluid">
+    {% if voter and not voter.has_voted %}
+        {% if voter_type == "learner" %}
+            {% with voter.full_name as display_name %}
+                <h4 class="text-center mb-4">
+                    Welcome <span style="color: crimson;">{{ display_name }} ({{ voter.grade }})</span>
+                </h4>
+            {% endwith %}
+        {% else %}
+            {% with voter.name as display_name %}
+                <h4 class="text-center mb-4">
+                Welcome <span style="color: crimson;">{{ voter.title }} {{ display_name }} </span>
+                </h4>
+            {% endwith %}
+        {% endif %}
+
+        <ul class="progressbar list-inline text-center mb-4">
+            {% for position, _ in positions %}
+                <li class="list-inline-item px-3 {% if forloop.first %}active{% endif %}" id="stepper-{{ forloop.counter }}">
+                    {{ position.name }}
+                </li>
+            {% endfor %}
+            <li class="list-inline-item px-3" id="stepper-thankyou">Finish</li>
+        </ul>
+
+        <form method="post" id="voteForm">
+            {% csrf_token %}
+            {% for position, aspirants in positions %}
+            <div class="step-section {% if forloop.first %}active{% endif %}" id="step-{{ forloop.counter }}">
+                <h5 style="color: chocolate; font-weight: 700;" class="text-center gf">Position: {{ position.name }}</h5>
+                <p class="text-center">
+                    Kindly select your favourite candidate for the
+                    <span style="color: crimson; font-weight: 700;">{{ position.name }}</span> position
+                </p>
+                <div class="row justify-content-center">
+                    {% for aspirant in aspirants %}
+                    <div class="{% if aspirants|length > 4 %}col-md-2{% else %}col-md-3{% endif %} col-sm-6">
+                        <div class="card mb-3 shadow-sm aspirant text-center">
+                            <img src="{{ aspirant.photo.url }}" alt="{{ aspirant.name }}">
+                            <div class="card-body">
+                                <h4 class="card-title xx">{{ aspirant.name }}</h4>
+                                <p class="card-text text-muted xx" style="font-weight: 700;">GRADE: {{ aspirant.grade }}</p>
+                                <span style="margin-right: 16px; font-weight: 800; color: crimson; font-size: 22px;">Vote:</span>
+                                <input type="radio" name="{{ position.id }}" value="{{ aspirant.id }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center" style="margin-bottom: 1px;">
+                    <button type="button" class="btn btn-primary btn-lg next-btn">Next</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="step-section" id="thank-you">
+                <div class="alert alert-success text-center">
+                    <h2>Thank you, {{ voter.full_name }}!</h2>
+                    <p style="font-size: ;">Click on the button below to submit your vote and to complete the process.</p>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success">Submit All Votes</button>
+                </div>
+            </div>
+        </form>
+
+    {% else %}
+        <div class="alert alert-danger text-center mt-5">
+            <h3>Access Denied</h3>
+            <p>You are either not logged in or have already voted.</p>
+            <a href="{% url 'login' %}" class="btn btn-secondary mt-3">Return to Login</a>
+        </div>
+    {% endif %}
+</div>
+
+
+    <footer class="text-center py-3 mt-5 bg-light border-top">
+    <p class="mb-0 small text-muted">
+        &copy; <span id="year"></span> Powered by <strong>ZPEC Hillside Campus IT CLUB</strong>
+    </p>
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const sections = document.querySelectorAll('.step-section');
+    const nextButtons = document.querySelectorAll('.next-btn');
+    const stepIndicators = document.querySelectorAll('.progressbar li');
+    let currentStep = 0;
+
+    function goToStep(stepIndex) {
+        sections[currentStep].classList.remove('active');
+        stepIndicators[currentStep].classList.remove('active');
+        setTimeout(() => {
+            sections[stepIndex].classList.add('active');
+            stepIndicators[stepIndex].classList.add('active');
+            currentStep = stepIndex;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 200);
+    }
+
+    nextButtons.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+            const selected = sections[index].querySelector('input[type="radio"]:checked');
+            if (!selected) {
+                alert("Please select a candidate before proceeding.");
+                return;
+            }
+            if (index + 1 < sections.length) {
+                goToStep(index + 1);
+            }
+        });
+    });
+
+    document.querySelectorAll('.aspirant input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const cards = this.closest('.row').querySelectorAll('.card');
+            cards.forEach(c => c.classList.remove('selected'));
+            this.closest('.card').classList.add('selected');
+        });
+    });
+</script>
+</body>
+</html>

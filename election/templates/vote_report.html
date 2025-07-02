@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote Report| ZPEC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+<div class="container">
+    <h2 class="mb-4">🗳️ Voting Report</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Select Position</label>
+            <select name="position" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Select Position --</option>
+                {% for pos in positions %}
+                    <option value="{{ pos.id }}" {% if pos.id|stringformat:"s" == selected_position_id %}selected{% endif %}>{{ pos.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if aspirants %}
+        <div class="col-md-4">
+            <label class="form-label">Select Aspirant</label>
+            <select name="aspirant" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Select Aspirant --</option>
+                {% for asp in aspirants %}
+                    <option value="{{ asp.id }}" {% if asp.id|stringformat:"s" == selected_aspirant_id %}selected{% endif %}>
+                        {{ asp.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+    </form>
+
+    {% if votes %}
+        <h4>Voters who chose {{ votes.0.aspirant.name }}</h4>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Learner Name</th>
+                    <th>Class</th>
+                    <th>Voted At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vote in votes %}
+                <tr>
+                    <td>{{ vote.learner.full_name }}</td>
+                    <td>{{ vote.learner.grade }}</td>
+                    <td>{{ vote.timestamp|date:"Y-m-d H:i:s" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <hr class="my-5">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>📋 Full Voting Report</h4>
+        <a href="{% url 'export_votes' %}" class="btn btn-success">Download CSV</a>
+    </div>
+
+    <table class="table table-hover table-sm mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Learner Name</th>
+                <th>Class</th>
+                <th>Position</th>
+                <th>Aspirant</th>
+                <th>Voted At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vote in all_votes %}
+            <tr>
+                <td>{{ vote.learner.full_name }}</td>
+                <td>{{ vote.learner.grade }}</td>
+                <td>{{ vote.position.name }}</td>
+                <td>{{ vote.aspirant.name }}</td>
+                <td>{{ vote.timestamp|date:"Y-m-d H:i:s" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap JS (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
