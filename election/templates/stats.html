@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Voting Stats | ZPEC</title>
+    <title>ZPEC 2025 Voting Center</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
             background-color: #f8f9fa;
+            font-size: 1.1rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #212529;
+        }
+
+        h1, h2, h4 {
+            font-weight: 700;
         }
 
         .stat-section {
@@ -21,27 +28,21 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .aspirant-entry {
             background: #fff;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .aspirant-entry img {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 15px;
@@ -51,6 +52,7 @@
         .aspirant-details {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .progress {
@@ -60,22 +62,63 @@
 
         .btn-nav {
             margin: 25px 10px 0;
+            font-size: 1rem;
         }
 
         .vote-label {
-            font-size: 15px;
+            font-size: 1rem;
             color: #6c757d;
+        }
+
+        .welcome-banner {
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            color: #212529;
+        }
+
+        .footer-note {
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 576px) {
+            .aspirant-details {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .aspirant-entry img {
+                margin-bottom: 10px;
+            }
+
+            .btn-nav {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .welcome-banner h1 {
+                font-size: 1.5rem;
+            }
+
+            .vote-label, .progress {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body class="py-4">
     <div class="container">
-    <h2 class="text-center mb-2">📊 Voting Results</h2>
-<p style="padding-top: 30px;" class="text-center text-muted mb-4">
-    ⚠️ Voting is still ongoing. Please refresh this page from time to time to view the latest updates.<br>
-    Use the <strong>Next</strong> button to navigate through the various positions.
+        <div class="welcome-banner">
+            <h1>ZPEC 2025 Voting Center</h1>
+       <p style="color: #212529;" class="text-center  mb-4">
+    🎉 Welcome to the ZPEC 2025 Voting Center! Voting is ongoing — refresh this page for updates and use the <strong>Next</strong> button to view results by position.
 </p>
-
 
         {% for group in data %}
             <div class="stat-section {% if forloop.first %}active{% endif %}" id="section-{{ forloop.counter }}">
@@ -87,11 +130,13 @@
                             {% if asp.photo %}
                                 <img src="{{ asp.photo }}" alt="{{ asp.name }}">
                             {% else %}
-                                <img src="https://via.placeholder.com/65" alt="No Photo">
+                                <img src="https://via.placeholder.com/70" alt="No Photo">
                             {% endif %}
-                            <div class="w-100">
+                            <div class="flex-grow-1" style="color: #212529; text-align: left;">
                                 <strong>{{ asp.name }}</strong> <small>({{ asp.grade }})</small><br>
-                                <span class="vote-label">{{ asp.votes }} votes / {{ group.total_votes }} — <span style="color: crimson;">{{ asp.percentage }}%</span></span>
+                                <span style="font-size: 18px;" class="vote-label">{{ asp.votes }} votes / {{ group.total_votes }} — 
+                                    <span style="color: crimson;">{{ asp.percentage }}%</span>
+                                </span>
 
                                 <div class="progress mt-2">
                                     <div class="progress-bar bg-success" role="progressbar"
@@ -116,18 +161,15 @@
         {% endif %}
     </div>
 
-
-
     <footer class="text-center py-3 mt-5 bg-light border-top">
-    <p class="mb-0 small text-muted">
-        &copy; <span id="year"></span> Powered by <strong>ZPEC Hillside Campus IT CLUB</strong>
-    </p>
-</footer>
+        <p class="mb-0 small text-muted footer-note">
+            &copy; <span id="year"></span> Powered by <strong>ZPEC Hillside Campus IT CLUB</strong>
+        </p>
+    </footer>
 
-<script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
 
     <script>
         let current = 0;
