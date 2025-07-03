@@ -25,7 +25,30 @@
         display: block;
     }
 }
-        
+
+
+        @media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .logo-side, .form-side {
+        flex: 1 1 100%;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .logo-side img {
+        max-height: 210px; /* 30% reduction from 300px */
+        max-width: 70%;    /* 30% smaller than 100% */
+    }
+
+    .form-side label {
+        text-align: left !important;
+        display: block;
+    }
+}
+
         .login-wrapper {
             display: flex;
             justify-content: center;
