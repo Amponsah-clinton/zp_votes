@@ -365,6 +365,79 @@ def resize_and_convert_image(image_path, max_size=(300, 300)):
         return None
 
 
+import csv
+import io
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Vote, Learner, Staff, Aspirant, Position
+from django.core.exceptions import ValidationError
+
+def upload_votes(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Please upload a valid CSV file.')
+            return redirect('upload_votes')
+
+        data_set = csv_file.read().decode('utf-8')
+        io_string = io.StringIO(data_set)
+        reader = csv.DictReader(io_string)
+
+        success_count = 0
+
+        for row in reader:
+            voter_name = row.get('Voter Name', '').strip()
+            voter_type = row.get('Voter Type', '').strip().lower()
+            class_or_role = row.get('Class/Role', '').strip()
+
+            learner = None
+            staff = None
+
+            # Identify learner or staff
+            try:
+                if voter_type == 'learner':
+                    learner = Learner.objects.get(full_name__iexact=voter_name)
+                elif voter_type == 'staff':
+                    staff = Staff.objects.get(name__iexact=voter_name)
+                else:
+                    raise ValueError("Invalid Voter Type")
+            except Exception as e:
+                messages.warning(request, f"Could not find {voter_type} named '{voter_name}': {e}")
+                continue
+
+            # Process each position/aspirant vote
+            for position_title, aspirant_name in row.items():
+                if position_title in ['Voter Name', 'Voter Type', 'Class/Role'] or not aspirant_name.strip():
+                    continue
+
+                aspirant_name = aspirant_name.strip()
+                position_title = position_title.strip()
+
+                try:
+                    position = Position.objects.get(name__iexact=position_title)
+                    aspirant = Aspirant.objects.get(name__iexact=aspirant_name, position=position)
+
+                    vote = Vote(
+                        learner=learner,
+                        staff=staff,
+                        position=position,
+                        aspirant=aspirant
+                    )
+                    vote.clean()
+                    vote.save()
+                    success_count += 1
+                except Exception as e:
+                    messages.warning(request, f"Error processing vote for '{aspirant_name}' as {position_title}: {e}")
+                    continue
+
+        messages.success(request, f"Uploaded {success_count} votes successfully.")
+        return redirect('upload_votes')
+
+    return render(request, 'upload_votes.html')
+
+
+
+
 def generate_election_report(request):
     document = Document()
 
