@@ -18,7 +18,7 @@ urlpatterns = [
         path('download/learners/', views.download_learners_word, name='download_learners'),
     path('download/results/', views.download_results_summary, name='download_results'),
      path('download-staff-credentials/', views.download_staff_credentials_word, name='download_staff_credentials'),
-
+path('upload-votes/', views.upload_votes, name='upload_votes'),
 
 
 
